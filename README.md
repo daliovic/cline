@@ -1,5 +1,5 @@
 ## Fork specific features 
-**API Usage Statistics View**:
+- **API Usage Statistics View**:
     - Added a new "API Stats" section accessible via a button with a graph icon in the sidebar and tab panel navigation.
     - This view displays API request history, including timestamps, provider/model details, task snippets, token counts, and costs.
     - Features include filtering by workspace, exporting data to JSON or CSV, and visualizing usage with charts (requests, tokens, cost) over different time ranges and granularities (15min, hourly, daily, weekly, monthly).
