@@ -1,3 +1,14 @@
+## Fork specific features 
+**API Usage Statistics View**:
+    - Added a new "API Stats" section accessible via a button with a graph icon in the sidebar and tab panel navigation.
+    - This view displays API request history, including timestamps, provider/model details, task snippets, token counts, and costs.
+    - Features include filtering by workspace, exporting data to JSON or CSV, and visualizing usage with charts (requests, tokens, cost) over different time ranges and granularities (15min, hourly, daily, weekly, monthly).
+    - Includes a summary table for tasks, showing total requests, tokens, and cost per task.
+- **"Add File to Chat" Command**:
+    - Introduced a new command "Add Files to Cline" ( [`cline.addFileToChat`](src/commands/addFileToChat.ts:10) ).
+    - This command can be triggered from the explorer context menu (single or multi-select) or the editor tab context menu.
+    - It adds file mentions (e.g., `@/path/to/file`) for the selected file(s) directly to the Cline chat input.
+
 <div align="center"><sub>
 English | <a href="https://github.com/cline/cline/blob/main/locales/es/README.md" target="_blank">Español</a> | <a href="https://github.com/cline/cline/blob/main/locales/de/README.md" target="_blank">Deutsch</a> | <a href="https://github.com/cline/cline/blob/main/locales/ja/README.md" target="_blank">日本語</a> | <a href="https://github.com/cline/cline/blob/main/locales/zh-cn/README.md" target="_blank">简体中文</a> | <a href="https://github.com/cline/cline/blob/main/locales/zh-tw/README.md" target="_blank">繁體中文</a> | <a href="https://github.com/cline/cline/blob/main/locales/ko/README.md" target="_blank">한국어</a>
 </sub></div>
