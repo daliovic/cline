@@ -93,11 +93,12 @@ import {
 	getLocalWindsurfRules,
 	getLocalCursorRules,
 } from "@core/context/instructions/user-instructions/external-rules"
-import { getGlobalState } from "@core/storage/state"
+import { getGlobalState, updateGlobalState } from "@core/storage/state"
 import { parseSlashCommands } from "@core/slash-commands"
 import WorkspaceTracker from "@integrations/workspace/WorkspaceTracker"
 import { McpHub } from "@services/mcp/McpHub"
 import { isInTestMode } from "../../services/test/TestMode"
+import { ApiRequestHistoryEntry } from "@/shared/ClineAccount"
 
 export const cwd =
 	vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0) ?? path.join(os.homedir(), "Desktop") // may or may not exist but fs checking existence would immediately ask for permission which would be bad UX, need to come up with a better solution
@@ -3434,6 +3435,34 @@ export class Task {
 			this.presentAssistantMessage()
 		}
 	}
+	private async saveApiRequestHistory(inputTokens: number, outputTokens: number, cost?: number) {
+		const modelInfo = this.api.getModel()
+		// Get provider name from model ID (e.g., "anthropic/claude-3" -> "anthropic")
+		const provider = modelInfo.id.split("/")[0]
+
+		// Create history entry
+		const workspaceName = vscode.workspace.workspaceFolders?.[0]?.name // Get workspace name directly
+		const historyEntry: ApiRequestHistoryEntry = {
+			timestamp: Date.now(),
+			provider,
+			model: modelInfo.id,
+			taskSnippet: this.clineMessages[0]?.text?.substring(0, 50) || "",
+			taskId: this.taskId,
+			inputTokens,
+			outputTokens,
+			cost,
+			workspace: workspaceName, // Add workspace name
+		}
+
+		// Get current history and append new entry
+		const currentHistory = ((await getGlobalState(this.getContext(), "apiRequestHistory")) as ApiRequestHistoryEntry[]) || []
+		// Keep only the last N entries (e.g., 1000)
+		const updatedHistory = [...currentHistory, historyEntry].slice(-1000)
+		await updateGlobalState(this.getContext(), "apiRequestHistory", updatedHistory)
+
+		// Also send the updated history to the webview if it's relevant
+		await this.postMessageToWebview({ type: "apiRequestHistory", history: updatedHistory })
+	}
 
 	async recursivelyMakeClineRequests(userContent: UserContent, includeFileDetails: boolean = false): Promise<boolean> {
 		if (this.abort) {
@@ -3675,6 +3704,7 @@ export class Task {
 							cacheWriteTokens += chunk.cacheWriteTokens ?? 0
 							cacheReadTokens += chunk.cacheReadTokens ?? 0
 							totalCost = chunk.totalCost
+							await this.saveApiRequestHistory(chunk.inputTokens, chunk.outputTokens, chunk.totalCost)
 							break
 						case "reasoning":
 							// reasoning will always come before assistant message
