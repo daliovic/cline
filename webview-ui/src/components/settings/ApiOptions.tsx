@@ -1,3 +1,47 @@
+import VSCodeButtonLink from "@/components/common/VSCodeButtonLink"
+import { useExtensionState } from "@/context/ExtensionStateContext"
+import { vscode } from "@/utils/vscode"
+import { getAsVar, VSC_DESCRIPTION_FOREGROUND } from "@/utils/vscStyles"
+import {
+	anthropicDefaultModelId,
+	anthropicModels,
+	ApiConfiguration,
+	ApiProvider,
+	askSageDefaultModelId,
+	askSageDefaultURL,
+	askSageModels,
+	azureOpenAiDefaultApiVersion,
+	bedrockDefaultModelId,
+	bedrockModels,
+	deepSeekDefaultModelId,
+	deepSeekModels,
+	doubaoDefaultModelId,
+	doubaoModels,
+	geminiDefaultModelId,
+	geminiModels,
+	internationalQwenDefaultModelId,
+	internationalQwenModels,
+	liteLlmModelInfoSaneDefaults,
+	mainlandQwenDefaultModelId,
+	mainlandQwenModels,
+	mistralDefaultModelId,
+	mistralModels,
+	ModelInfo,
+	openAiModelInfoSaneDefaults,
+	openAiNativeDefaultModelId,
+	openAiNativeModels,
+	openRouterDefaultModelId,
+	openRouterDefaultModelInfo,
+	requestyDefaultModelId,
+	requestyDefaultModelInfo,
+	sambanovaDefaultModelId,
+	sambanovaModels,
+	vertexDefaultModelId,
+	vertexModels,
+	xaiDefaultModelId,
+	xaiModels,
+} from "@shared/api"
+import { ExtensionMessage } from "@shared/ExtensionMessage"
 import {
 	VSCodeButton,
 	VSCodeCheckbox,
@@ -9,58 +53,15 @@ import {
 	VSCodeTextField,
 } from "@vscode/webview-ui-toolkit/react"
 import { Fragment, memo, useCallback, useEffect, useMemo, useState } from "react"
-import ThinkingBudgetSlider from "./ThinkingBudgetSlider"
 import { useEvent, useInterval } from "react-use"
 import styled from "styled-components"
 import * as vscodemodels from "vscode"
-import {
-	anthropicDefaultModelId,
-	anthropicModels,
-	ApiConfiguration,
-	ApiProvider,
-	azureOpenAiDefaultApiVersion,
-	bedrockDefaultModelId,
-	bedrockModels,
-	deepSeekDefaultModelId,
-	deepSeekModels,
-	geminiDefaultModelId,
-	geminiModels,
-	mistralDefaultModelId,
-	mistralModels,
-	ModelInfo,
-	openAiModelInfoSaneDefaults,
-	openAiNativeDefaultModelId,
-	openAiNativeModels,
-	openRouterDefaultModelId,
-	openRouterDefaultModelInfo,
-	requestyDefaultModelId,
-	requestyDefaultModelInfo,
-	mainlandQwenModels,
-	internationalQwenModels,
-	mainlandQwenDefaultModelId,
-	internationalQwenDefaultModelId,
-	vertexDefaultModelId,
-	vertexModels,
-	askSageModels,
-	askSageDefaultModelId,
-	askSageDefaultURL,
-	xaiDefaultModelId,
-	xaiModels,
-	sambanovaModels,
-	sambanovaDefaultModelId,
-	doubaoModels,
-	doubaoDefaultModelId,
-	liteLlmModelInfoSaneDefaults,
-} from "@shared/api"
-import { ExtensionMessage } from "@shared/ExtensionMessage"
-import { useExtensionState } from "@/context/ExtensionStateContext"
-import { vscode } from "@/utils/vscode"
-import { getAsVar, VSC_DESCRIPTION_FOREGROUND } from "@/utils/vscStyles"
-import VSCodeButtonLink from "@/components/common/VSCodeButtonLink"
-import OpenRouterModelPicker, { ModelDescriptionMarkdown, OPENROUTER_MODEL_PICKER_Z_INDEX } from "./OpenRouterModelPicker"
-import { ClineAccountInfoCard } from "./ClineAccountInfoCard"
-import RequestyModelPicker from "./RequestyModelPicker"
+import PasswordField from "../common/PasswordField"
 import { useOpenRouterKeyInfo } from "../ui/hooks/useOpenRouterKeyInfo"
+import { ClineAccountInfoCard } from "./ClineAccountInfoCard"
+import OpenRouterModelPicker, { ModelDescriptionMarkdown, OPENROUTER_MODEL_PICKER_Z_INDEX } from "./OpenRouterModelPicker"
+import RequestyModelPicker from "./RequestyModelPicker"
+import ThinkingBudgetSlider from "./ThinkingBudgetSlider"
 
 interface ApiOptionsProps {
 	showModelOptions: boolean
@@ -297,14 +298,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "asksage" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.asksageApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("asksageApiKey")}
+						onInputChange={handleInputChange("asksageApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>AskSage API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -326,14 +325,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "anthropic" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.apiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("apiKey")}
+						onInputChange={handleInputChange("apiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>Anthropic API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 
 					<VSCodeCheckbox
 						checked={anthropicBaseUrlSelected}
@@ -383,14 +380,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "openai-native" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.openAiNativeApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("openAiNativeApiKey")}
+						onInputChange={handleInputChange("openAiNativeApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>OpenAI API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -414,14 +409,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "deepseek" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.deepSeekApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("deepSeekApiKey")}
+						onInputChange={handleInputChange("deepSeekApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>DeepSeek API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -470,14 +463,12 @@ const ApiOptions = ({
 						Please select the appropriate API interface based on your location. If you are in China, choose the China
 						API interface. Otherwise, choose the International API interface.
 					</p>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.qwenApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("qwenApiKey")}
+						onInputChange={handleInputChange("qwenApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>Qwen API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -501,14 +492,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "doubao" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.doubaoApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("doubaoApiKey")}
+						onInputChange={handleInputChange("doubaoApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>Doubao API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -532,14 +521,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "mistral" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.mistralApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("mistralApiKey")}
+						onInputChange={handleInputChange("mistralApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>Mistral API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -563,11 +550,9 @@ const ApiOptions = ({
 
 			{selectedProvider === "openrouter" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.openRouterApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("openRouterApiKey")}
+						onInputChange={handleInputChange("openRouterApiKey")}
 						placeholder="Enter API Key...">
 						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
 							<span style={{ fontWeight: 500 }}>OpenRouter API Key</span>
@@ -575,7 +560,7 @@ const ApiOptions = ({
 								<OpenRouterBalanceDisplay apiKey={apiConfiguration.openRouterApiKey} />
 							)}
 						</div>
-					</VSCodeTextField>
+					</PasswordField>
 					{!apiConfiguration?.openRouterApiKey && (
 						<VSCodeButtonLink
 							href={getOpenRouterAuthUrl(uriScheme)}
@@ -632,30 +617,24 @@ const ApiOptions = ({
 						</VSCodeTextField>
 					) : (
 						<>
-							<VSCodeTextField
+							<PasswordField
 								value={apiConfiguration?.awsAccessKey || ""}
-								style={{ width: "100%" }}
-								type="password"
-								onInput={handleInputChange("awsAccessKey")}
+								onInputChange={handleInputChange("awsAccessKey")}
 								placeholder="Enter Access Key...">
 								<span style={{ fontWeight: 500 }}>AWS Access Key</span>
-							</VSCodeTextField>
-							<VSCodeTextField
+							</PasswordField>
+							<PasswordField
 								value={apiConfiguration?.awsSecretKey || ""}
-								style={{ width: "100%" }}
-								type="password"
-								onInput={handleInputChange("awsSecretKey")}
+								onInputChange={handleInputChange("awsSecretKey")}
 								placeholder="Enter Secret Key...">
 								<span style={{ fontWeight: 500 }}>AWS Secret Key</span>
-							</VSCodeTextField>
-							<VSCodeTextField
+							</PasswordField>
+							<PasswordField
 								value={apiConfiguration?.awsSessionToken || ""}
-								style={{ width: "100%" }}
-								type="password"
-								onInput={handleInputChange("awsSessionToken")}
+								onInputChange={handleInputChange("awsSessionToken")}
 								placeholder="Enter Session Token...">
 								<span style={{ fontWeight: 500 }}>AWS Session Token</span>
-							</VSCodeTextField>
+							</PasswordField>
 						</>
 					)}
 					<DropdownContainer zIndex={DROPDOWN_Z_INDEX - 1} className="dropdown-container">
@@ -921,14 +900,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "gemini" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.geminiApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("geminiApiKey")}
+						onInputChange={handleInputChange("geminiApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>Gemini API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 
 					<VSCodeCheckbox
 						checked={geminiBaseUrlSelected}
@@ -995,14 +972,13 @@ const ApiOptions = ({
 						placeholder={"Enter base URL..."}>
 						<span style={{ fontWeight: 500 }}>Base URL</span>
 					</VSCodeTextField>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.openAiApiKey || ""}
-						style={{ width: "100%", marginBottom: 10 }}
-						type="password"
-						onInput={handleInputChange("openAiApiKey")}
-						placeholder="Enter API Key...">
+						onInputChange={handleInputChange("openAiApiKey")}
+						placeholder="Enter API Key..."
+						style={{ marginBottom: 10 }}>
 						<span style={{ fontWeight: 500 }}>API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<VSCodeTextField
 						value={apiConfiguration?.openAiModelId || ""}
 						style={{ width: "100%", marginBottom: 10 }}
@@ -1312,28 +1288,24 @@ const ApiOptions = ({
 
 			{selectedProvider === "requesty" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.requestyApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("requestyApiKey")}
+						onInputChange={handleInputChange("requestyApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					{!apiConfiguration?.requestyApiKey && <a href="https://app.requesty.ai/manage-api">Get API Key</a>}
 				</div>
 			)}
 
 			{selectedProvider === "together" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.togetherApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("togetherApiKey")}
+						onInputChange={handleInputChange("togetherApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<VSCodeTextField
 						value={apiConfiguration?.togetherModelId || ""}
 						style={{ width: "100%" }}
@@ -1485,14 +1457,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "litellm" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.liteLlmApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("liteLlmApiKey")}
+						onInputChange={handleInputChange("liteLlmApiKey")}
 						placeholder="Default: noop">
 						<span style={{ fontWeight: 500 }}>API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<VSCodeTextField
 						value={apiConfiguration?.liteLlmBaseUrl || ""}
 						style={{ width: "100%" }}
@@ -1633,14 +1603,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "xai" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.xaiApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("xaiApiKey")}
+						onInputChange={handleInputChange("xaiApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>X AI API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
@@ -1673,14 +1641,12 @@ const ApiOptions = ({
 
 			{selectedProvider === "sambanova" && (
 				<div>
-					<VSCodeTextField
+					<PasswordField
 						value={apiConfiguration?.sambanovaApiKey || ""}
-						style={{ width: "100%" }}
-						type="password"
-						onInput={handleInputChange("sambanovaApiKey")}
+						onInputChange={handleInputChange("sambanovaApiKey")}
 						placeholder="Enter API Key...">
 						<span style={{ fontWeight: 500 }}>SambaNova API Key</span>
-					</VSCodeTextField>
+					</PasswordField>
 					<p
 						style={{
 							fontSize: "12px",
